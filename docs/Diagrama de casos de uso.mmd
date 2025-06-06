@@ -1,0 +1,24 @@
+graph TD
+    actorUsuario((Usuario))
+    actorSensorH((Sensor de Humedad))
+    actorSensorT((Sensor de Temperatura))
+
+    subgraph Sistema_de_Riego
+        caso1([Leer humedad del suelo])
+        caso2([Leer temperatura ambiente])
+        caso3([Analizar condiciones de riego])
+        caso4([Activar bomba de agua])
+        caso5([Activar aspersores por zona])
+        caso6([Apagar sistema])
+        caso7([Esperar franja horaria])
+    end
+
+    actorUsuario --> caso3
+    actorSensorH --> caso1
+    actorSensorT --> caso2
+    caso1 --> caso3
+    caso2 --> caso3
+    caso3 --> caso4
+    caso3 --> caso5
+    caso3 --> caso6
+    caso3 --> caso7

@@ -1,0 +1,22 @@
+flowchart TD
+    A[Inicio] --> B1[Sensores de humedad toman datos]
+    A --> B2[Sensor de temperatura toma dato]
+    B1 --> C1[ESP32 recibe datos de humedad]
+    B2 --> C2[ESP32 recibe dato de temperatura]
+    C1 --> D[Procesa humedad y temperatura]
+    C2 --> D
+    D --> E{¿Temperatura adecuada para regar?}
+    E -- No --> F[Espera hasta que la temperatura sea adecuada]
+    F --> D
+
+    E -- Sí --> G{¿Hay zonas que necesitan riego?}
+    G -- No --> H[Apaga el sistema]
+    H --> I[Espera hasta la próxima franja horaria]
+    I --> B1
+
+    G -- Sí --> J[Envía señal al aspersor inteligente]
+    J --> K[Riega la zona correspondiente]
+    K --> L{¿Quedan zonas por regar?}
+    L -- Sí --> J
+    L -- No --> M[Apaga el sistema]
+    M --> I

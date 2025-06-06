@@ -1,0 +1,20 @@
+stateDiagram-v2
+    [*] --> EsperandoFranjaHoraria
+
+    EsperandoFranjaHoraria --> LeyendoSensores : Al iniciar franja horaria
+
+    LeyendoSensores --> EvaluandoCondiciones
+
+    EvaluandoCondiciones --> EsperandoTemperatura : Temperatura no adecuada
+    EsperandoTemperatura --> EvaluandoCondiciones : Temperatura adecuada
+
+    EvaluandoCondiciones --> SistemaInactivo : No hay zonas para regar
+    SistemaInactivo --> EsperandoFranjaHoraria : Esperar próximo ciclo
+
+    EvaluandoCondiciones --> Regando : Hay zonas para regar
+    Regando --> BombaActiva : Iniciar riego
+    BombaActiva --> AspersoresActivos : Activar aspersores por zona
+    AspersoresActivos --> EvaluandoCondiciones : Repetir por zona
+    AspersoresActivos --> ApagandoSistema : Finalizar riego
+
+    ApagandoSistema --> EsperandoFranjaHoraria

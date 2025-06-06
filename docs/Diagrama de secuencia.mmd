@@ -1,0 +1,30 @@
+sequenceDiagram
+    autonumber
+    participant SH as Sensor de Humedad
+    participant ST as Sensor de Temperatura
+    participant ESP as ESP32
+    participant BOM as Bomba de Agua
+    participant ASP as Aspersor Inteligente
+
+    SH->>ESP: Enviar datos de humedad
+    ST->>ESP: Enviar dato de temperatura
+
+    ESP->>ESP: Analizar temperatura
+    alt Temperatura no adecuada
+        ESP->>ESP: Esperar hasta que la temperatura sea adecuada
+    end
+
+    ESP->>ESP: Analizar humedad por zonas
+    alt Ninguna zona necesita riego
+        ESP->>ESP: Apagar sistema
+        ESP->>ESP: Esperar franja horaria
+    else Alguna zona necesita riego
+        loop Por cada zona a regar
+            ESP->>BOM: Encender bomba de agua
+            ESP->>ASP: Activar aspersor
+            ASP-->>ESP: Confirmar riego completado
+            ESP->>BOM: Apagar bomba de agua
+        end
+        ESP->>ESP: Apagar sistema
+        ESP->>ESP: Esperar franja horaria
+    end
