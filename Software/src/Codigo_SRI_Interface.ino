@@ -57,10 +57,10 @@ void setup() {
   Serial.println("\nConectado a WiFi");
   Serial.println("IP local: " + WiFi.localIP().toString());
 
-  Configuración NTP
+//  Configuración NTP
   configTime(gmtOffset_sec, daylightOffset_sec, ntpServer);
 
-  Servidor web
+//  Servidor web
   server.on("/", handleRoot);
   server.on("/datos", handleDatos);
   server.begin();
