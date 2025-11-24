@@ -11,7 +11,7 @@
 #define INDI_LED 5 
 #define TEMP 0
 #define RELE_PIN 12
-#define SERVO_1 11
+#define SERVO_1 18
 
 // Configuración PWM
 const int PWM_CHANNEL = 0;     
@@ -22,8 +22,8 @@ const int LED_OUTPUT_PIN = SERVO_1;   // Usamos pin 18 para PWM (separado del LE
 const int DELAY_MS = 4;          // Delay para fade
 
 // WiFi
-const char* ssid       = "iPhone de Ignacio";
-const char* password   = "20210-ber";
+const char* ssid       = "BERNAT-2.4G-52tW";
+const char* password   = "Valentina_2022*";
 
 // NTP
 const long gmtOffset_sec = -10800;  
@@ -146,4 +146,4 @@ void handleDatos() {
   json += "}";
 
   server.send(200, "application/json", json);
-}
+} 
