@@ -8,18 +8,28 @@
 #define Sens_HUM1 36
 #define Sens_HUM2 39
 #define Sens_HUM3 34
+#define SERVO_1 14
+#define SERVO_2 27
+#define SERVO_3 26
 #define INDI_LED 5 
 #define TEMP 0
-#define RELE_PIN 12
-#define SERVO_1 18
+#define BOMBA 12
+#define LIMIT_HUMEDAD 80
 
-// Configuración PWM
-const int PWM_CHANNEL = 0;     
+// Configuración PWM     
 const int PWM_FREQ = 50;      
 const int PWM_RESOLUTION = 16;  
 const int MAX_DUTY_CYCLE = (int)(pow(2, PWM_RESOLUTION) - 1);
 const int LED_OUTPUT_PIN = SERVO_1;   // Usamos pin 18 para PWM (separado del LED indicador)
 const int DELAY_MS = 4;          // Delay para fade
+
+const int PWM_CHANNEL_SERVO_1 = 0;
+const int PWM_CHANNEL_SERVO_2 = 1;
+const int PWM_CHANNEL_SERVO_3 = 2;
+
+const int LED_OUTPUT_PIN_1 = SERVO_1;   // Usamos pin 18 para PWM (separado del LED indicador)
+const int LED_OUTPUT_PIN_2 = SERVO_2;   // Usamos pin 18 para PWM (separado del LED indicador)
+const int LED_OUTPUT_PIN_3 = SERVO_3;   // Usamos pin 18 para PWM (separado del LED indicador)
 
 // WiFi
 const char* ssid       = "BERNAT-2.4G-52tW";
@@ -36,17 +46,28 @@ uint16_t HUM_2 = 0;
 uint16_t HUM_3 = 0;
 float t = 0;
 bool franja_OK = 0;
-uint16_t PWM_value = 1700;   // Valor inicial PWM
+uint16_t PWM_value_1 = 8000;   // Valor inicial PWM
+uint16_t PWM_value_2 = 4875;   // Valor inicial PWM
+uint16_t PWM_value_3 = 1750;   // Valor inicial PWM
+
+bool riego1_activo = false;
+bool riego2_activo = false;
+bool riego3_activo = false; 
+
 
 DHT22 dht22(TEMP); 
 WebServer server(80);
+
+void riego_Sector1(void);
+void riego_Sector2(void);
+void riego_Sector3(void);
 
 // ------------------- Setup -------------------
 void setup() {
   Serial.begin(9600);
   pinMode(TEMP, INPUT);
   pinMode(INDI_LED, OUTPUT);
-  pinMode(RELE_PIN, OUTPUT);
+  pinMode(BOMBA, OUTPUT);
 
   // Conexión WiFi
   WiFi.begin(ssid, password);
@@ -66,16 +87,26 @@ void setup() {
   server.begin();
 
   // Configuración PWM
-  ledcSetup(PWM_CHANNEL, PWM_FREQ, PWM_RESOLUTION);
-  ledcAttachPin(LED_OUTPUT_PIN, PWM_CHANNEL);
+  ledcSetup(PWM_CHANNEL_SERVO_1, PWM_FREQ, PWM_RESOLUTION);
+  ledcAttachPin(LED_OUTPUT_PIN_1, PWM_CHANNEL_SERVO_1);
+
+  ledcSetup(PWM_CHANNEL_SERVO_2, PWM_FREQ, PWM_RESOLUTION);
+  ledcAttachPin(LED_OUTPUT_PIN_2, PWM_CHANNEL_SERVO_2);
+
+  ledcSetup(PWM_CHANNEL_SERVO_3, PWM_FREQ, PWM_RESOLUTION);
+  ledcAttachPin(LED_OUTPUT_PIN_3, PWM_CHANNEL_SERVO_3);
 }
 
 // ------------------- Loop -------------------
 void loop() {
   server.handleClient();
   digitalWrite(INDI_LED, HIGH);
-  ledcWrite(PWM_CHANNEL, 8250);
-   
+  if( (t <= 25 || t > 10) && (franja_OK == true) ){
+    riego_Sector1();
+    riego_Sector2();
+    riego_Sector3();   
+
+  }
 }
 
 // ------------------- Funciones auxiliares -------------------
@@ -147,3 +178,63 @@ void handleDatos() {
 
   server.send(200, "application/json", json);
 } 
+void riego_Sector1(void){
+  // Código para riego del Sector 1
+  if(HUM_1 < LIMIT_HUMEDAD){
+    ledcWrite(PWM_CHANNEL_SERVO_1, PWM_value_1);
+    ledcWrite(PWM_CHANNEL_SERVO_2, PWM_value_1);
+    ledcWrite(PWM_CHANNEL_SERVO_3, PWM_value_1);
+    digitalWrite(BOMBA, HIGH); // Activar riego
+
+    riego1_activo = true;
+
+    while (HUM_1 < 50)
+    {
+      server.handleClient();
+      get_data();
+    }
+    riego1_activo = false;
+    digitalWrite(BOMBA, LOW); // Desactivar riego
+    
+  }
+}
+void riego_Sector2(void){
+  // Código para riego del Sector 2
+  if(HUM_2 < LIMIT_HUMEDAD){
+    ledcWrite(PWM_CHANNEL_SERVO_1, PWM_value_2);
+    ledcWrite(PWM_CHANNEL_SERVO_2, PWM_value_2);
+    ledcWrite(PWM_CHANNEL_SERVO_3, PWM_value_2);
+    digitalWrite(BOMBA, HIGH); // Activar riego
+
+    riego2_activo = true;
+
+    while (HUM_2 < 50)
+    {
+      server.handleClient();
+      get_data();
+    }
+    riego2_activo = false;
+    digitalWrite(BOMBA, LOW); // Desactivar riego
+    
+  }
+}
+void riego_Sector3(void){
+  // Código para riego del Sector 3
+  if(HUM_3 < LIMIT_HUMEDAD){
+    ledcWrite(PWM_CHANNEL_SERVO_1, PWM_value_3);
+    ledcWrite(PWM_CHANNEL_SERVO_2, PWM_value_3);
+    ledcWrite(PWM_CHANNEL_SERVO_3, PWM_value_3);
+    digitalWrite(BOMBA, HIGH); // Activar riego
+
+    riego3_activo = true;
+
+    while (HUM_3 < 50)
+    {
+      server.handleClient();
+      get_data();
+    }
+    riego3_activo = false;
+    digitalWrite(BOMBA, LOW); // Desactivar riego
+    
+  }
+}
