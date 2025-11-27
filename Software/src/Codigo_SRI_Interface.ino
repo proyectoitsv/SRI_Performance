@@ -100,11 +100,12 @@ void setup() {
 // ------------------- Loop -------------------
 void loop() {
   server.handleClient();
-if(t >= 10 && t <= 25 && franja_OK == true){
+//  ledcWrite(PWM_CHANNEL_SERVO_1, 7194);
+ //if(t >= 10 && t <= 25 && franja_OK == true){
     riego_Sector1();
     riego_Sector2();
     riego_Sector3();
-  }
+  //} 
 }
 
 // ------------------- Funciones auxiliares -------------------
@@ -179,7 +180,7 @@ void handleDatos() {
 void riego_Sector1(void){
   // Código para riego del Sector 1
   if(HUM_1 < 70 ){
-    ledcWrite(PWM_CHANNEL_SERVO_1, PWM_value_1);
+    ledcWrite(PWM_CHANNEL_SERVO_1, 4975);
     ledcWrite(PWM_CHANNEL_SERVO_2, PWM_value_1);
     ledcWrite(PWM_CHANNEL_SERVO_3, PWM_value_1);
     digitalWrite(BOMBA, HIGH); // Activar riego
@@ -199,7 +200,7 @@ void riego_Sector1(void){
 void riego_Sector2(void){
   // Código para riego del Sector 2
   if(HUM_2 < 70 ){
-    ledcWrite(PWM_CHANNEL_SERVO_1, PWM_value_2);
+    ledcWrite(PWM_CHANNEL_SERVO_1, 6388);
     ledcWrite(PWM_CHANNEL_SERVO_2, PWM_value_2);
     ledcWrite(PWM_CHANNEL_SERVO_3, PWM_value_2);
     digitalWrite(BOMBA, HIGH); // Activar riego
@@ -219,7 +220,7 @@ void riego_Sector2(void){
 void riego_Sector3(void){
   // Código para riego del Sector 3
   if(HUM_3 < 70 ){
-    ledcWrite(PWM_CHANNEL_SERVO_1, PWM_value_3);
+    ledcWrite(PWM_CHANNEL_SERVO_1, 4782);
     ledcWrite(PWM_CHANNEL_SERVO_2, PWM_value_3);
     ledcWrite(PWM_CHANNEL_SERVO_3, PWM_value_3);
     digitalWrite(BOMBA, HIGH); // Activar riego
