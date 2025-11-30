@@ -13,7 +13,7 @@
 #define SERVO_3 26
 #define INDI_LED 23 
 #define TEMP 0
-#define BOMBA 19
+#define BOMBA 12
 
 // Configuración PWM
 const int PWM_CHANNEL_SERVO_1 = 0;
@@ -31,8 +31,8 @@ const int LED_OUTPUT_PIN_3 = SERVO_3;   // Usamos pin 18 para PWM (separado del 
 const int DELAY_MS = 4;          // Delay para fade9
 
 // WiFi
-const char* ssid       = "BERNAT-2.4G-52tW"; //"Electronica_7moB";
-const char* password   =  "Valentina_2022*"; //"proyecto7B!";
+const char* ssid       = "BERNAT-2.4G-52tW";//"Electronica_7moB";// 
+const char* password   =  "Valentina_2022*";//"proyecto7B!";// 
 
 // NTP
 const long gmtOffset_sec = -10800;  
@@ -46,7 +46,7 @@ uint16_t HUM_3 = 0;
 float t = 0;
 bool franja_OK = 0;
 
-uint16_t PWM_value_1 = 8000;   // Valor inicial PWM
+uint16_t PWM_value_1 = 8200;   // Valor inicial PWM
 uint16_t PWM_value_2 = 4875;   // Valor inicial PWM
 uint16_t PWM_value_3 = 1750;   // Valor inicial PWM
 
@@ -100,12 +100,12 @@ void setup() {
 // ------------------- Loop -------------------
 void loop() {
   server.handleClient();
-//  ledcWrite(PWM_CHANNEL_SERVO_1, 7194);
- //if(t >= 10 && t <= 25 && franja_OK == true){
-    riego_Sector1();
-    riego_Sector2();
-    riego_Sector3();
-  //} 
+  if(franja_OK == true){
+      get_data();
+      riego_Sector1();
+      riego_Sector2();
+      riego_Sector3();
+  } 
 }
 
 // ------------------- Funciones auxiliares -------------------
@@ -162,8 +162,9 @@ void handleDatos() {
   if (getLocalTime(&timeinfo)) {
     int hora = timeinfo.tm_hour;
     int minuto = timeinfo.tm_min;
-    franja_OK = ((hora == 5 && minuto >= 0) || (hora >= 6 && hora <= 9) || 
-                 (hora == 14 && minuto >= 41) || (hora >= 22 && hora <= 24));    
+    franja_OK = ((hora == 5 && minuto >= 30) || (hora >= 6 && hora <= 9) || 
+                 (hora == 9 && minuto >= 30) || (hora >= 22 && hora <= 24) ||
+                 (hora == 0 ));    
     digitalWrite(INDI_LED, franja_OK ? HIGH : LOW);
   }
 
@@ -179,15 +180,15 @@ void handleDatos() {
 }
 void riego_Sector1(void){
   // Código para riego del Sector 1
-  if(HUM_1 < 70 ){
-    ledcWrite(PWM_CHANNEL_SERVO_1, 4975);
-    ledcWrite(PWM_CHANNEL_SERVO_2, PWM_value_1);
-    ledcWrite(PWM_CHANNEL_SERVO_3, PWM_value_1);
+  if(t >= 10 && t <= 25 && HUM_1 < 60 ){
+    ledcWrite(PWM_CHANNEL_SERVO_1, 8200);
+    ledcWrite(PWM_CHANNEL_SERVO_2, 1750);
+    ledcWrite(PWM_CHANNEL_SERVO_3, 1750);
     digitalWrite(BOMBA, HIGH); // Activar riego
 
     riego1_activo = true;
 
-    while (HUM_1 < 50)
+    while (HUM_1 < 80)
     {
       server.handleClient();
       get_data();
@@ -199,7 +200,7 @@ void riego_Sector1(void){
 }
 void riego_Sector2(void){
   // Código para riego del Sector 2
-  if(HUM_2 < 70 ){
+  if(t >= 10 && t <= 25 && HUM_2 < 60 ){
     ledcWrite(PWM_CHANNEL_SERVO_1, 6388);
     ledcWrite(PWM_CHANNEL_SERVO_2, PWM_value_2);
     ledcWrite(PWM_CHANNEL_SERVO_3, PWM_value_2);
@@ -207,7 +208,7 @@ void riego_Sector2(void){
 
     riego2_activo = true;
 
-    while (HUM_2 < 50)
+    while (HUM_2 < 80)
     {
       server.handleClient();
       get_data();
@@ -219,7 +220,7 @@ void riego_Sector2(void){
 }
 void riego_Sector3(void){
   // Código para riego del Sector 3
-  if(HUM_3 < 70 ){
+  if(t >= 10 && t <= 25 && HUM_3 < 60 ){
     ledcWrite(PWM_CHANNEL_SERVO_1, 4782);
     ledcWrite(PWM_CHANNEL_SERVO_2, PWM_value_3);
     ledcWrite(PWM_CHANNEL_SERVO_3, PWM_value_3);
@@ -227,7 +228,7 @@ void riego_Sector3(void){
 
     riego3_activo = true;
 
-    while (HUM_3 < 50)
+    while (HUM_3 < 80)
     {
       server.handleClient();
       get_data();
