@@ -1,5 +1,5 @@
 flowchart TD
-    A[Inicio] --> B[¿Está dentro de la franja horaria?]
+    A[Inicio] --> B{¿Está dentro de la franja horaria?}
     B -->|Sí| C1[Sensores de humedad de suelo toman datos]
     B -->|Sí| C2[Sensor de temperatura ambiente toma dato]
     B -->|No| Z1[Espera hasta la próxima franja horaria]
@@ -9,12 +9,12 @@ flowchart TD
     D1 --> E[Procesa humedad y temperatura]
     D2 --> E
 
-    E --> F[¿Temperatura y humedad adecuadas para regar?]
+    E --> F{¿Temperatura y humedad adecuadas para regar?}
     F -->|No| G[Espera hasta que la temperatura sea adecuada]
     G --> E
 
     F -->|Sí| H[Envía señal al aspersor inteligente]
     H --> I[Riega la zona correspondiente]
-    I --> J[¿Quedan zonas por regar?]
+    I --> J{¿Quedan zonas por regar?}
     J -->|Sí| E
     J -->|No| K[Stand BY]
